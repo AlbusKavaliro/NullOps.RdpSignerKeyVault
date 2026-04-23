@@ -231,7 +231,7 @@ namespace NullOps.RdpSigner
 			// When only an RSA private key is available (no X509Certificate2), create a CmsSigner
 			// that uses NoSignature identifier and attach the private key via the PrivateKey property.
 			// This avoids requiring a certificate while still producing a CMS signature using RSA.
-			CmsSigner signer = new CmsSigner(SubjectIdentifierType.NoSignature)
+			CmsSigner signer = new CmsSigner(signingCertificate)
 			{
 				PrivateKey = rsa,
 				IncludeOption = X509IncludeOption.WholeChain,

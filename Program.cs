@@ -28,7 +28,7 @@ var x509 = X509CertificateLoader.LoadCertificate(certBytes);
 
 var rsa = RSAFactory.Create(credential, certificateWithPolicy.Value.KeyId, x509);
 
-using var signer = new RdpSigner(rsa);
+using var signer = new RdpSigner(x509, rsa);
 foreach (var file in args[2..])
 {
     signer.SignFile(file, Path.ChangeExtension(file, ".signed.rdp"));

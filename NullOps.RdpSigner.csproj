@@ -1,47 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <Configurations>Debug;Test;Release</Configurations>
-    <AssemblyTitle>NullOps.RDPSigner</AssemblyTitle>
-    <AssemblyDescription>A simple class to allow signing of RDP files</AssemblyDescription>
-    <AssemblyCompany>NullOps</AssemblyCompany>
-    <AssemblyProduct>NullOps.RDPSigner</AssemblyProduct>
-    <AssemblyCopyright>Copyright (c) 2016 NullOps</AssemblyCopyright>
-    <ComVisible>false</ComVisible>
-    <Guid>bf9d6730-d36c-4a4b-8cfe-0c268c4a3016</Guid>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BF9D6730-D36C-4A4B-8CFE-0C268C4A3016}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>NullOps.RdpSigner</RootNamespace>
-    <AssemblyName>NullOps.RdpSigner</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+	<LangVersion>latest</LangVersion>
+	<OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Certificates" Version="4.8.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Keys" Version="4.9.0" />
+    <PackageReference Include="RSAKeyVaultProvider" Version="2.1.1" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.7" />
   </ItemGroup>
 </Project>

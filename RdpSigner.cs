@@ -40,7 +40,7 @@ namespace NullOps.RdpSigner
 		/// <summary>
 		/// The certificate to sign with
 		/// </summary>
-		private readonly X509Certificate2 m_signingCertificate;
+		private readonly RSA m_rsa;
 
 		/// <summary>
 		/// If we are already disposed
@@ -51,9 +51,9 @@ namespace NullOps.RdpSigner
 		/// RdpSigner
 		/// </summary>
 		/// <param name="signingCertificate">The certificate you wish to use when signing</param>
-		public RdpSigner(X509Certificate2 signingCertificate)
+		public RdpSigner(RSA rsa)
 		{
-			m_signingCertificate = signingCertificate;
+			m_rsa = rsa;
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace NullOps.RdpSigner
 		/// <returns>The signed value within an rdp file</returns>
 		public string Sign(string rdpText)
 		{
-			return Sign(rdpText, m_signingCertificate);
+			return Sign(rdpText, m_rsa);
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace NullOps.RdpSigner
 		/// <param name="rdpFilePath">Path to the rdp file</param>
 		public void SignFile(string rdpFilePath)
 		{
-			SignFile(rdpFilePath, m_signingCertificate);
+			SignFile(rdpFilePath, m_rsa);
 		}
 
 		/// <summary>
@@ -82,7 +82,7 @@ namespace NullOps.RdpSigner
 		/// <param name="outputRdpFilePath">The output path for the signed rdp file</param>
 		public void SignFile(string sourceRdpFilePath, string outputRdpFilePath)
 		{
-			SignFile(sourceRdpFilePath, outputRdpFilePath, m_signingCertificate);
+			SignFile(sourceRdpFilePath, outputRdpFilePath, m_rsa);
 		}
 
 		/// <summary>
@@ -90,14 +90,14 @@ namespace NullOps.RdpSigner
 		/// </summary>
 		/// <param name="rdpFilePath">Path to the rdp file</param>
 		/// <param name="signingCertificate">The certificate you wish to use when signing</param>
-		public static void SignFile(string rdpFilePath, X509Certificate2 signingCertificate)
+		public static void SignFile(string rdpFilePath, RSA rsa)
 		{
 			if (string.IsNullOrWhiteSpace(rdpFilePath))
 			{
 				throw new ArgumentException(nameof(rdpFilePath) + " must be a valid path.");
 			}
 
-			SignFile(rdpFilePath, rdpFilePath, signingCertificate);
+			SignFile(rdpFilePath, rdpFilePath, rsa);
 		}
 
 		/// <summary>
@@ -106,7 +106,7 @@ namespace NullOps.RdpSigner
 		/// <param name="sourceRdpFilePath">The path to the source rdp file to sign</param>
 		/// <param name="outputRdpFilePath">The output path for the signed rdp file</param>
 		/// <param name="signingCertificate">The certificate you wish to use when signing</param>
-		public static void SignFile(string sourceRdpFilePath, string outputRdpFilePath, X509Certificate2 signingCertificate)
+		public static void SignFile(string sourceRdpFilePath, string outputRdpFilePath, RSA rsa)
 		{
 			if (string.IsNullOrWhiteSpace(sourceRdpFilePath))
 			{
@@ -125,7 +125,7 @@ namespace NullOps.RdpSigner
 
 			string sourceText = File.ReadAllText(sourceRdpFilePath);
 
-			string signedText = Sign(sourceText, signingCertificate);
+			string signedText = Sign(sourceText, rsa);
 
 			if (!string.IsNullOrWhiteSpace(signedText))
 			{
@@ -139,7 +139,7 @@ namespace NullOps.RdpSigner
 		/// <param name="rdpText">The string data inside an rdp file</param>
 		/// <param name="signingCertificate">The certificate you wish to use when signing</param>
 		/// <returns>The signed value within an rdp file</returns>
-		public static string Sign(string rdpText, X509Certificate2 signingCertificate)
+		public static string Sign(string rdpText, RSA rsa)
 		{
 			List<RdpSetting> settings = ParseSettings(rdpText);
 
@@ -154,7 +154,7 @@ namespace NullOps.RdpSigner
 			settings.Add(signScopeSetting);
 			settingsToSign.Add(signScopeSetting);
 
-			RdpSetting signatureSetting = BuildSignatureSetting(settingsToSign, signingCertificate);
+			RdpSetting signatureSetting = BuildSignatureSetting(settingsToSign, rsa);
 
 			settings.Add(signatureSetting);
 
@@ -186,13 +186,13 @@ namespace NullOps.RdpSigner
 		/// <param name="settings">The settings to generate the signature for</param>
 		/// <param name="signingCertificate">The certificate to use to sign it</param>
 		/// <returns>The rdp signature setting</returns>
-		private static RdpSetting BuildSignatureSetting(List<RdpSetting> settings, X509Certificate2 signingCertificate)
+		private static RdpSetting BuildSignatureSetting(List<RdpSetting> settings, RSA rsa)
 		{
 			string textToSign = FlattenSettings(settings);
 
 			byte[] bytesToSign = Encoding.Unicode.GetBytes(textToSign).Concat(TwoBlankBytes).ToArray();
 
-			byte[] settingSignature = SignBytes(bytesToSign, signingCertificate);
+			byte[] settingSignature = SignBytes(bytesToSign, rsa);
 
 			uint settingSignatureLength = Convert.ToUInt32(settingSignature.Length);
 
@@ -214,10 +214,14 @@ namespace NullOps.RdpSigner
 		/// <param name="payload">The bytes to sign</param>
 		/// <param name="signingCertificate">The certificate to sign with</param>
 		/// <returns>The signature</returns>
-		private static byte[] SignBytes(byte[] payload, X509Certificate2 signingCertificate)
+        private static byte[] SignBytes(byte[] payload, RSA rsa)
 		{
-			CmsSigner signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, signingCertificate)
+			// When only an RSA private key is available (no X509Certificate2), create a CmsSigner
+			// that uses NoSignature identifier and attach the private key via the PrivateKey property.
+			// This avoids requiring a certificate while still producing a CMS signature using RSA.
+			CmsSigner signer = new CmsSigner(SubjectIdentifierType.NoSignature)
 			{
+				PrivateKey = rsa,
 				IncludeOption = X509IncludeOption.WholeChain,
 				DigestAlgorithm = Oid.FromFriendlyName(RdpSignatureDigestAlgorithmName, OidGroup.All)
 			};
@@ -347,7 +351,7 @@ namespace NullOps.RdpSigner
 
 			m_disposed = true;
 
-			m_signingCertificate.Dispose();
+			m_rsa.Dispose();
 		}
 	}
 }

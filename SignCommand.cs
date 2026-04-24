@@ -67,7 +67,7 @@ public class SignCommand : Command<SignSettings>
                 return 1;
             }
 
-            var cert = new X509Certificate2(settings.CertificatePath, settings.CertificatePassword ?? string.Empty);
+            var cert = X509CertificateLoader.LoadPkcs12FromFile(settings.CertificatePath, settings.CertificatePassword ?? string.Empty);
             credential = new ClientCertificateCredential(
                 settings.TenantId ?? throw new InvalidOperationException("TenantId required for certificate authentication"),
                 settings.ClientId ?? throw new InvalidOperationException("ClientId required for certificate authentication"),

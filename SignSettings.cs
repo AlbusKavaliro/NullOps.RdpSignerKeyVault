@@ -54,5 +54,5 @@ public sealed class SignSettings : CommandSettings
     public string? CertificatePassword { get; init; }
 
     [CommandArgument(0, "<files>")]
-    public required IEnumerable<string> Files { get; init; }
+    public required string[] Files { get; init; }
 }

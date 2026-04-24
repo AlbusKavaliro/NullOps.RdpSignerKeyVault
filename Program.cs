@@ -1,27 +1,20 @@
+using NullOps.RdpSigner;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using System;
 
-namespace NullOps.RdpSigner;
-
-public static class Program
+var app = new CommandApp<SignCommand>();
+app.Configure(config =>
 {
-    public static int Main(string[] args)
-    {
-        var app = new CommandApp<SignCommand>();
-        app.Configure(config =>
-        {
-            config.SetApplicationName("rdpsign");
-        });
+    config.SetApplicationName("rdpsign");
+});
 
-        try
-        {
-            return app.Run(args);
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.WriteException(ex);
-            return 1;
-        }
-    }
+try
+{
+    return await app.RunAsync(args).ConfigureAwait(false);
+}
+catch (Exception ex)
+{
+    AnsiConsole.WriteException(ex);
+    return 1;
 }

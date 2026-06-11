@@ -8,11 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
-    <PackageReference Include="Azure.Security.KeyVault.Certificates" Version="4.8.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Certificates" Version="4.9.0" />
     <PackageReference Include="Azure.Security.KeyVault.Keys" Version="4.10.0" />
     <PackageReference Include="RSAKeyVaultProvider" Version="2.1.1" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.7" />
-    <PackageReference Include="Spectre.Console" Version="0.55.2" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.9" />
+    <PackageReference Include="Spectre.Console" Version="0.56.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
   </ItemGroup>
 </Project>

@@ -74,7 +74,9 @@ namespace NullOps.RdpSigner
 			{"redirectdirectx","RedirectDirectX"},
 			{"rdgiskdcproxy","RDGIsKDCProxy"},
 			{"kdcproxyname","KDCProxyName"},
-			{"eventloguploadaddress","EventLogUploadAddress"}
-		};
+			{"eventloguploadaddress","EventLogUploadAddress"},
+			{"redirectwebauthn", "RedirectWebAuthn"},
+			{"enablerdsaadauth", "EnableRdsAadAuth"},
+        };
 	}
 }

@@ -10,12 +10,13 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 
 namespace NullOps.RdpSigner;
 
 public class SignCommand : Command<SignSettings>
 {
-    public override int Execute(CommandContext context, SignSettings settings)
+    protected override int Execute(CommandContext context, SignSettings settings, CancellationToken cancellationToken)
     {
         // Basic argument validation
         if (string.IsNullOrWhiteSpace(settings.VaultUri))
